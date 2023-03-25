@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { corsOptions } from './security/corsOptions';
+import routes from './routes';
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ app.use(cors(corsOptions));
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan('combined'));
+
+app.use("/", routes());
 
 const PORT = process.env.PORT || 3001;
 
