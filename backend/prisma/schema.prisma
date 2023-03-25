@@ -32,7 +32,7 @@ model Usuario {
   nome  String
   email String  @unique
   senha String
-  cargo Cargo[]
+  cargos Cargo[]
 }
 
 model Solicitante {
