@@ -19,11 +19,16 @@ export const isLoggedIn = (
     return res.status(401).json({ erro: "Usuário não logado!" });
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err) => {
-    if (err) {
-      return res.status(401).json({ erro: "Token Inválido!" });
-    }
+  jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET as string,
+    (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ erro: "Token Inválido!" });
+      }
 
-    next();
-  });
+      req.body.permissoes = (<any>decoded).cargos;
+      next();
+    }
+  );
 };
