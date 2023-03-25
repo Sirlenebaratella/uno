@@ -6,3 +6,79 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Cargo {
+  ADMIN
+  ANALISTA
+  VENDEDOR
+  EXPEDICAO
+}
+
+enum StatusSolicitacaoDeAnalise {
+  Pendente
+  EmAnalise
+  Concluida
+  Cancelada
+}
+
+enum StatusAnalise {
+  Pendente
+  EmAnalise
+  Concluida
+}
+
+model Usuario {
+  id    String  @id @default(dbgenerated("(concat('usr_', gen_random_uuid()))::TEXT"))
+  nome  String
+  email String  @unique
+  senha String
+  cargo Cargo[]
+}
+
+model Solicitante {
+  cnpj                  String                 @id
+  nome                  String                 @unique
+  cep                   String
+  endereco              String
+  cidade                String
+  estado                String
+  telefone              String                 @unique
+  email                 String                 @unique
+  solicitacoesDeAnalise SolicitacaoDeAnalise[]
+}
+
+model SolicitacaoDeAnalise {
+  id                    String                     @id @default(dbgenerated("(concat('sol_', gen_random_uuid()))::TEXT"))
+  tipoDeAnalise         String
+  consideracoesGerais   String
+  informacoesAdicionais String?
+  dataDeSolicitacao     DateTime                   @default(now())
+  status                StatusSolicitacaoDeAnalise @default(Pendente)
+  solicitante           Solicitante                @relation(fields: [solicitanteCnpj], references: [cnpj])
+  solicitanteCnpj       String
+  amostras              Amostra[]
+}
+
+model Amostra {
+  id                     String               @id @default(dbgenerated("(concat('amo_', gen_random_uuid()))::TEXT"))
+  nomeAmosrtra           String
+  descricao              String
+  tipo                   String
+  notaFiscal             String               @unique
+  validade               DateTime
+  dataDeRecebimento      DateTime             @default(now())
+  solicitacaoDeAnalise   SolicitacaoDeAnalise @relation(fields: [solicitacaoDeAnaliseId], references: [id])
+  solicitacaoDeAnaliseId String
+  analises               Analise[]
+}
+
+model Analise {
+  id            String        @id @default(dbgenerated("(concat('ana_', gen_random_uuid()))::TEXT"))
+  nomeAnalise   String
+  especificacao String
+  dataDeAnalise DateTime?
+  status        StatusAnalise @default(Pendente)
+  amostra       Amostra       @relation(fields: [amostraId], references: [id])
+  amostraId     String
+  resultado     String?
+}
