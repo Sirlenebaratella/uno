@@ -70,6 +70,7 @@ export const login = async (req: express.Request, res: express.Response) => {
 
     const token = jwt.sign(
       {
+        id: usuario.id,
         usuario: usuario.nome,
         email: usuario.email,
         cargos: usuario.cargos,

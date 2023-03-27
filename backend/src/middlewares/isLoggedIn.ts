@@ -28,7 +28,7 @@ export const isLoggedIn = (
       }
 
       req.body.permissoes = (<any>decoded).cargos;
-      req.body.usuarioLogado = (<any>decoded).email;
+      req.body.usuarioLogado = (<any>decoded).id;
       next();
     }
   );

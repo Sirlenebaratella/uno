@@ -6,15 +6,17 @@ export const isOwner = async (
   res: express.Response,
   next: express.NextFunction
 ) => {
-    const { usuarioLogado } = req.body;
-    const { id } = req.params;
+  const { usuarioLogado } = req.body;
+  const { id } = req.params;
 
-    const usuario = await prisma.usuario.findUnique({
-        where: { id }
-    })
+  const usuario = await prisma.usuario.findUnique({
+    where: { id },
+  });
 
-    
-    if(usuario?.email !== usuarioLogado) return res.status(403).json("Você não tem permissão para editar esse usuário!"); 
+  if (usuario?.id !== usuarioLogado)
+    return res
+      .status(403)
+      .json("Você não tem permissão para editar esse usuário!");
 
-    next()
+  next();
 };
