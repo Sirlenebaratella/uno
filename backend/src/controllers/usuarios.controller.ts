@@ -43,7 +43,7 @@ export const atualizarDados = async (
       } catch (error) {
         return res.status(400).json(error);
       }
-    };
+    }
 
     const usuarioAtualizado = await prisma.usuario.update({
       where: { id },
@@ -66,4 +66,42 @@ export const atualizarDados = async (
     console.log(error);
     return res.sendStatus(400);
   }
+};
+
+export const adicionarCargo = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+  const {novoCargo} = req.body;
+
+  const usuario = await prisma.usuario.findUnique({
+    where: { id }
+  })
+
+  if(novoCargo) {
+    if (usuario?.cargos.some((cargo) => cargo === novoCargo)) {
+      return res.status(409).json('Usuário já possui este cargo!')
+    } 
+
+    usuario?.cargos.push(novoCargo)
+  };
+
+  const usuarioAtualizado = await prisma.usuario
+    .update({
+      where: { id },
+      data: {
+        cargos: usuario?.cargos,
+      },
+      select: {
+        id: true,
+        nome: true,
+        email: true,
+        senha: false,
+        cargos: true,
+      },
+    })
+    .catch((error) => res.status(404).json("Usuário não encontrado!"));
+
+  return res.status(200).json(usuarioAtualizado);
 };
