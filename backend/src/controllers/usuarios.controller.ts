@@ -39,7 +39,7 @@ export const atualizarDados = async (
     if (senha) {
       try {
         await senhaSchema.validate(req.body);
-        usuario.senha = senha;
+        usuario.senha = bcrypt.hashSync(senha, 10);
       } catch (error) {
         return res.status(400).json(error);
       }
