@@ -160,3 +160,21 @@ export const removerUsuario = async (
 
   res.status(200).json({ message: "Usuário deletado!" });
 };
+
+export const listarUsuarios = async ( 
+  req: express.Request,
+  res: express.Response
+) => {
+  
+  const listaDeUsuarios = await prisma.usuario.findMany({
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      senha: false,
+      cargos: true,
+    }
+  })
+
+  res.status(200).json(listaDeUsuarios)
+}

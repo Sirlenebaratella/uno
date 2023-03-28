@@ -2,6 +2,7 @@ import express from "express";
 import {
   adicionarCargo,
   atualizarDados,
+  listarUsuarios,
   removerCargo,
   removerUsuario,
 } from "../controllers/usuarios.controller";
@@ -34,5 +35,12 @@ export default (router: express.Router) => {
     isLoggedIn,
     isAuthorized("ADMIN"),
     removerUsuario
+  );
+
+  router.get(
+    "/usuarios/listar-usuarios",
+    isLoggedIn,
+    isAuthorized("ADMIN"),
+    listarUsuarios
   );
 };
