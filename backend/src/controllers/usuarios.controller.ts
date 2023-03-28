@@ -73,35 +73,73 @@ export const adicionarCargo = async (
   res: express.Response
 ) => {
   const { id } = req.params;
-  const {novoCargo} = req.body;
+  const { novoCargo } = req.body;
 
   const usuario = await prisma.usuario.findUnique({
-    where: { id }
-  })
+    where: { id },
+  });
 
-  if(novoCargo) {
+  if (!usuario) return res.status(404).json("Usuário não encontrado!");
+
+  if (novoCargo) {
     if (usuario?.cargos.some((cargo) => cargo === novoCargo)) {
-      return res.status(409).json('Usuário já possui este cargo!')
-    } 
+      return res.status(409).json("Usuário já possui este cargo!");
+    }
 
-    usuario?.cargos.push(novoCargo)
-  };
+    usuario?.cargos.push(novoCargo);
+  }
 
-  const usuarioAtualizado = await prisma.usuario
-    .update({
-      where: { id },
-      data: {
-        cargos: usuario?.cargos,
-      },
-      select: {
-        id: true,
-        nome: true,
-        email: true,
-        senha: false,
-        cargos: true,
-      },
-    })
-    .catch((error) => res.status(404).json("Usuário não encontrado!"));
+  const usuarioAtualizado = await prisma.usuario.update({
+    where: { id },
+    data: {
+      cargos: usuario?.cargos,
+    },
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      senha: false,
+      cargos: true,
+    },
+  });
 
-  return res.status(200).json(usuarioAtualizado);
+  res.status(200).json(usuarioAtualizado);
+};
+
+export const removerCargo = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+  const { removerCargo } = req.body;
+
+  const usuario = await prisma.usuario.findUnique({
+    where: { id },
+  });
+
+  if (!usuario) return res.status(404).json("Usuário não encontrado!");
+
+  if (usuario.cargos.length === 1)
+    return res
+      .status(400)
+      .json("Todos usuários precisam ter pelo menos 1 cargo!");
+
+  usuario.cargos = usuario?.cargos.filter((cargo) => cargo !== removerCargo);
+  console.log(usuario.cargos);
+
+  const usuarioAtualizado = await prisma.usuario.update({
+    where: { id },
+    data: {
+      cargos: usuario.cargos,
+    },
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      senha: false,
+      cargos: true,
+    },
+  });
+
+  res.status(200).json(usuarioAtualizado);
 };
