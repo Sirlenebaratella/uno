@@ -79,11 +79,12 @@ export const adicionarCargo = async (
     where: { id },
   });
 
-  if (!usuario) return res.status(404).json("Usuário não encontrado!");
+  if (!usuario)
+    return res.status(404).json({ message: "Usuário não encontrado!" });
 
   if (novoCargo) {
     if (usuario?.cargos.some((cargo) => cargo === novoCargo)) {
-      return res.status(409).json("Usuário já possui este cargo!");
+      return res.status(409).json({ message: "Usuário já possui este cargo!" });
     }
 
     usuario?.cargos.push(novoCargo);
@@ -117,12 +118,13 @@ export const removerCargo = async (
     where: { id },
   });
 
-  if (!usuario) return res.status(404).json("Usuário não encontrado!");
+  if (!usuario)
+    return res.status(404).json({ message: "Usuário não encontrado!" });
 
   if (usuario.cargos.length === 1)
     return res
       .status(400)
-      .json("Todos usuários precisam ter pelo menos 1 cargo!");
+      .json({ message: "Todos usuários precisam ter pelo menos 1 cargo!" });
 
   usuario.cargos = usuario?.cargos.filter((cargo) => cargo !== removerCargo);
   console.log(usuario.cargos);
@@ -142,4 +144,19 @@ export const removerCargo = async (
   });
 
   res.status(200).json(usuarioAtualizado);
+};
+
+export const removerUsuario = async (
+  req: express.Request,
+  res: express.Response
+) => {
+  const { id } = req.params;
+
+  await prisma.usuario
+    .delete({
+      where: { id },
+    })
+    .catch((err) => res.status(404).json("Usuário não encontrado!"));
+
+  res.status(200).json({ message: "Usuário deletado!" });
 };

@@ -3,6 +3,7 @@ import {
   adicionarCargo,
   atualizarDados,
   removerCargo,
+  removerUsuario,
 } from "../controllers/usuarios.controller";
 import { isLoggedIn } from "../middlewares/isLoggedIn";
 import { isOwner } from "../middlewares/isOwner";
@@ -26,5 +27,12 @@ export default (router: express.Router) => {
     isLoggedIn,
     isAuthorized("ADMIN"),
     removerCargo
+  );
+
+  router.delete(
+    "/usuarios/remover-usuario/:id",
+    isLoggedIn,
+    isAuthorized("ADMIN"),
+    removerUsuario
   );
 };
